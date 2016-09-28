@@ -1,0 +1,16 @@
+library(edgeR)
+library(limma)
+comp = read.table('Mouse_count_data.txt',row.names = 1, header = TRUE,sep = '\t')
+rownames(comp) <- comp$Names
+comp <- subset(comp, select = -c(Names))
+comp <- comp[rowSums(comp)>1,]
+dge <- DGEList(counts = comp)
+dge <- calcNormFactors(dge)
+sup = read.table('Mouse_sup.txt',row.names = 1, header = TRUE, sep = '\t')
+type = factor(sup$Types, levels = c("VT", "SN"))
+design <- model.matrix(~type)
+v <- voom(dge, design)
+fit <- lmFit(v,design)
+fit <- eBayes(fit)
+top <- topTable(fit,coef =1, number = Inf)
+write.table(top,file="Mouse_sig_output_false.txt",sep = "\t")
