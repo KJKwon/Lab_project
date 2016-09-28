@@ -1,0 +1,10 @@
+library(DESeq2)
+comp = read.table('Mouse_count_data.txt',row.names = 1, header = TRUE,sep = '\t')
+rownames(comp) <- comp$Names
+condi = read.table('Mouse_sup.txt',sep='\t', header = TRUE)
+dds<-DESeqDataSetFromMatrix(countData=comp,colData = condi,design = ~Types)
+dds <- estimateSizeFactors(dds)
+dds <- estimateDispersions(dds)
+dds <- DESeq(dds)
+results(dds)
+write.table(results(dds),'SNC_vs_VTA_human.txt',sep='\t')
