@@ -1,4 +1,7 @@
-eset <- read.table("SNC_vs_VTA_combat_processed.txt", row.names = 1, head = TRUE)
+library(limma)
+dat <- read.table("SNC_vs_VTA_combat_processed.txt", row.names = 1, head = TRUE)
+dat.norm <- normalizeWithinArrays(dat,method="scale")
+eset <- log(dat.norm[,1:12]+1)
 targets <- read.table("SNC_vs_VTA_sup.txt", row.names =1, head = TRUE)
 Treat <- factor(targets$Region, levels = c("VTA","SNC"))
 design <- model.matrix(~Treat)
