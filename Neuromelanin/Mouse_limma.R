@@ -12,5 +12,21 @@ design <- model.matrix(~type)
 v <- voom(dge, design)
 fit <- lmFit(v,design)
 fit <- eBayes(fit)
+plotMA(fit, coef = ncol(fit))
+adj.p <- p.adjust(fit$p.value[,2], method="fdr")
+o <- c()
+for (i in 1:length(adj.p)){
+  if (adj.p[i] < 0.05){
+    if (fit$Amean[i] > 0){
+    o <- c(o,i) 
+    }
+  }
+}
+o
+x <- fit$Amean
+y <- fit$coefficients[,2]
+smoothScatter(x,y)
+G <- rownames(mousedata)
+text(x[o],y[o],labels =G[o], cex = 0.5)
 top <- topTable(fit,coef =1, number = Inf)
 write.table(top,file="Mouse_sig_output_false.txt",sep = "\t")
