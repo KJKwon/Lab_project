@@ -1,3 +1,4 @@
+
 import sys
 import re
 
@@ -27,6 +28,8 @@ for line in f_sam:
                 continue
 
         tokens = line.strip().split()
+        if len(tokens) < 3:
+                continue
         pair_id = tokens[2]
         sam_flag = int(tokens[1])
         pair_check = tokens[6]
