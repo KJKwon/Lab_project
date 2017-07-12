@@ -18,7 +18,7 @@ f_sam = open(fnm_sam,'r')
 for line in f_sam:
         if line.startswith('@SQ'):
                 tokens = line.strip().split()
-                seq_id = re.sub(r'^SN:','',tokens[1]).split('|')[1]
+                seq_id = re.sub(r'^SN:','',tokens[1])
                 seq_len = int(re.sub(r'^LN:','',tokens[2]))
                 seq_id2len[seq_id] = seq_len
                 continue
@@ -51,8 +51,8 @@ sum_pair_freq = sum(pair_freq.values())
 f_out = open(fnm_sam.split('.')[0]+'_RPKM+COUNT.txt','w')
 f_out.write('GENE\tCOUNT\tRPKM\n')
 for gene_name in sorted(pair_freq.keys()):
-        trans_id = filtered_pair_freq[gene_name][0]
-        trans_read_count = filtered_pair_freq[gene_name][1]
+        trans_id = gene_name
+        trans_read_count = filtered_pair_freq[gene_name]
         trans_read_len = seq_id2len[trans_id]
         trans_RPKM = trans_read_count/((trans_read_len/1000.0)*(sum_pair_freq/1000000.0))
         f_out.write('%s\t%d\t%3f\n'%(gene_name,trans_read_count,trans_RPKM))
