@@ -1,0 +1,62 @@
+import sys
+
+if len(sys.argv) < 2:
+    print ("[USAGE] Linkage2LSvalue.py [Linkage corr file]")
+    sys.exit(1)
+
+##Linakge corr file
+#Xelaev18008123m Xelaev18002810m -0.914285714285714      Not Linked
+#Xelaev18008123m Xelaev18017507m 0.902255639097744       Not Linked
+
+f_in_name = sys.argv[1]
+f_in = open(f_in_name,'r')
+Gene2Corr = dict()
+Gene2Link = dict()
+Link_sum = 0
+Not_Link_sum = 0
+for line in f_in:
+    tokens = line.strip().split('\t')
+    Gene_1 = tokens[0]
+    Gene_2 = tokens[1]
+    GeneSet = (Gene_1,Gene_2)
+    Corr_coeff = float(tokens[2])
+    Linkage = tokens[3]
+    Gene2Corr[GeneSet] = Corr_coeff
+    Gene2Link[GeneSet] = Linkage
+    if Linkage == 'Not Linked':
+        Not_Link_sum += 1
+    else:
+        Link_sum += 1
+
+f_in.close()
+
+f_out = open(f_in_name.split('linkage.txt')[0]+'LSvalue.txt','w')
+f_out.write('Mean corr\tLikelihood Score\n')
+Total_corr = sorted(Gene2Corr.items(), key = lambda item:abs(item[1]))
+num = len(Total_corr)//1000
+limit = len(Total_corr)%1000
+for i in range(num + 1):
+    Corr_sum = 0
+    LS_value = 0
+    Link = 0
+    Not_Link = 0
+    if len(Total_corr) < (i+1)*1000:
+        k = limit
+    else:
+        k = 1000
+    for j in range(k):
+        site = i*1000 + j
+        dat = Total_corr[site]
+        GeneSet = dat[0]
+        corr = float(dat[1])
+        Linkage = Gene2Link[GeneSet]
+        if Linkage == 'Not Linked':
+            Not_Link += 1
+        else:
+            Link +=1
+        Corr_sum += abs(corr)
+    Corr_mean = Corr_sum/k
+    LS_value = (float(Link)/Not_Link)/(float(Link_sum)/Not_Link_sum)
+    f_out.write('%.20f\t%.20f\n'%(Corr_mean,LS_value))
+
+f_out.close()
