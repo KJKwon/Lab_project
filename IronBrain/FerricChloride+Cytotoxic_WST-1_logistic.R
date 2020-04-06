@@ -27,7 +27,7 @@ plot(p)
 
 ##geom_point = scatter_plot, geom_errorbar = error_bar
 p = ggplot() + geom_point(aes(x = log10(variable+1), y = value),tbl.dotplot)+ 
-  geom_smooth(data= tbl.dotplot[1:45,], aes(x = log10(variable+1), y = value), method = 'nls' , 
+  geom_smooth(data= tbl.dotplot, aes(x = log10(variable+1), y = value), method = 'nls' , 
               formula = y ~ SSlogis(x, Asym, xmid, scal), se = FALSE) + 
   geom_errorbar(aes(x = log10(value+1), ymin = variable - se, ymax = variable + se), tbl.plot)+
 #panel design part
