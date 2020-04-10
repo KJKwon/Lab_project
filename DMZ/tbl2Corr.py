@@ -17,7 +17,8 @@ for line in f_in:
     XenID = tokens[0].split('|')[1]
     ExprVal = [float(x) for x in tokens[1:]]
     temp_exp = np.array(ExprVal)
-    if np.mean(temp_exp) != 0:
+#First quarter of total expression
+    if np.mean(temp_exp) > 0.036:
         Total_ID.append(XenID)
         Total_exp.append(ExprVal)
 
