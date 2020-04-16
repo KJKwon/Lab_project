@@ -1,5 +1,6 @@
 import sys
-import numpy as np
+from scipy import stats
+from scipy import mean
 
 #Corcoeff cut off 0.8
 if len(sys.argv) < 2:
@@ -16,9 +17,8 @@ for line in f_in:
     tokens = line.strip().split('\t')
     XenID = tokens[0].split('|')[1]
     ExprVal = [float(x) for x in tokens[1:]]
-    temp_exp = np.array(ExprVal)
-#First quarter of total expression
-    if np.mean(temp_exp) > 0.036:
+#Median of total expression
+    if mean(ExprVal) > 0.905:
         Total_ID.append(XenID)
         Total_exp.append(ExprVal)
 
@@ -33,7 +33,7 @@ for i in range(len(Total_ID)-1):
         Gene2 = Total_ID[j]
         Gene1_exp = Total_exp[i]
         Gene2_exp = Total_exp[j]
-        corcoeff = np.corrcoef(Gene1_exp,Gene2_exp)[0][1]
+        corcoeff = stats.spearmanr(Gene1_exp,Gene2_exp)[0]
         if abs(corcoeff) >= 0.8:
             f_out.write('%s\t%s\t%.20f\n'%(Gene1,Gene2,corcoeff))
 
