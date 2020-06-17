@@ -40,7 +40,7 @@ for line in f_count:
         new_count = []
         old_count = GeneID2Count[GeneID]
         for i in range(len(Counts)):
-            tmp_count = int(old_count[i]) + int(Counts[i])
+            tmp_count = float(old_count[i]) + float(Counts[i])
             new_count.append(str(tmp_count))
         GeneID2Count[GeneID] = new_count
 
