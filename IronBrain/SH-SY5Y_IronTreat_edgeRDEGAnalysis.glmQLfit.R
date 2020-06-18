@@ -29,6 +29,7 @@ write.table(topTags(qlf , n = Inf),'SH-SY5Y_IronTreat_Ctrlvs10mM.edgeRQLF_output
 DEG.total = topTags(qlf , n = Inf)$table
 DEG.clean = DEG.total[abs(DEG.total$logFC) > 1 & DEG.total$FDR < 0.05, ]
 write.table(DEG.clean,'SH-SY5Y_IronTreat_Ctrlvs10mM.edgeRQLF_output_clean.txt', sep = '\t',quote = FALSE)
+
 #Ctrl vs 2mM vs 10mM (Compare by each concentration)
 tbl.Ctrlvs2mMvs10mM = tbl[,c(2,3,4,5,8,9)]
 tbl.Ctrlvs2mMvs10mM.rpkm = tbl_rpkm[,c(2,3,4,5,8,9)]
