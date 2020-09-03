@@ -22,9 +22,9 @@ rank.filter2 = apply(tbl.human.rpkm.scaled[,4:12], 1, function(x) sum(x > 0 ) >=
 rank.filter3 = apply(tbl.human.rpkm.scaled[,1:9], 1, function(x) sum(x > 0 ) >= 8 | sum(x < 0) >= 8) &
   apply(tbl.human.rpkm.scaled[,10:12], 1, function(x) sum(x > 0) >= 2 | sum(x < 0) >= 2)
 rank.filtered = rownames(tbl.human.rpkm.selected)[rank.filter1 | rank.filter2 | rank.filter3]
-manual.MGI.filter = c("GADD45B","VEGFB","CTF1","PTP4A3","SULT1A1","HES5","MPV17L","SFT2D2","EMILIN2","FNDC3B","CDKN1C",
+#manual.MGI.filter = c("GADD45B","VEGFB","CTF1","PTP4A3","SULT1A1","HES5","MPV17L","SFT2D2","EMILIN2","FNDC3B","CDKN1C",
   "HMGCR","GNB4","HMGCS1")
-manual.Next.filter = rev(c('HES5','EMILIN2','CPXM1','CDKN1C','DPYSL4','MFAP2','GALNS','EPB41L4B','TMEM192',
+#manual.Next.filter = rev(c('HES5','EMILIN2','CPXM1','CDKN1C','DPYSL4','MFAP2','GALNS','EPB41L4B','TMEM192',
                        'XPNPEP3','PTPN11','TIFA'))
 tbl.rat.rpkm.scaled = tbl.rat.rpkm.scaled[,c(9:18,1:8)]
 tbl.human.rpkm.scaled = tbl.human.rpkm.scaled[,c(10:12,7:9,4:6,1:3)]
