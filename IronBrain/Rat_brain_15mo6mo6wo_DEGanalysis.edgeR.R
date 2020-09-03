@@ -1,37 +1,62 @@
 library(edgeR)
-tbl = read.table('Rat_Brain_15M_6M_6W_count.csv', header = TRUE, sep = '\t', row.names = 1)
-tbl_rpkm = read.table('Rat_Brain_15M_6M_6W_rpkm.csv', header = TRUE, sep = '\t', row.names = 1)
-Outlier = tbl[,23, drop = FALSE]
-tbl = tbl[,-c(23)]
-tbl_rpkm = tbl_rpkm[,-c(23)]
-select = apply(tbl_rpkm, 1, function(x) sum(x >= 1) == 35 )
-Sample = colnames(tbl)
-Group = c('E','A','D','D','D','A','D','A','A','E','E','E','C','C','A','A','A',rep('C', times = 8), rep('B', times = 10))
-Age = c(rep(c('15M','6M','6W'),c(8,17,10)))
-target = data.frame(Sample, Group, Age)
-group = factor(paste0(target$Group, ".", target$Age))
-tbl.filtered = tbl[select,]
-y = DGEList(tbl.filtered,group = group)
+tbl = read.table('Rat_Brain_15M_6M_6W_count_GeneID.txt', header = TRUE, sep = '\t', row.names = 1)
+tbl_rpkm = read.table('Rat_Brain_15M_6M_6W_rpkm_GeneID.txt', header = TRUE, sep = '\t', row.names = 1)
+tbl_male = tbl[,1:16]
+tbl_female = tbl[,17:36]
+tbl_rpkm_male = tbl_rpkm[,1:16]
+tbl_rpkm_female =tbl_rpkm[,17:36]
+
+#Male case
+select = apply(tbl_rpkm_male, 1, function(x) sum(x >= 1) >= 8 )
+tbl_male.clean = tbl_male[select,]
+tbl_rpkm_male.clean = tbl_rpkm_male[select,]
+tmp_cor <- dist( 1 - cor(as.matrix(tbl_rpkm_male), method = 'spearman'))
+tmp_clust <- hclust(tmp_cor, method="average")
+tmp_clust = as.dendrogram(tmp_clust)
+plot(tmp_clust, cex = 1.5, cex.main = 1.5)
+Age.group = factor(c(rep('15M', times = 8), rep('6M', times = 8)))
+#y = DGEList(tbl_male.clean, group = Age.group)
+y = DGEList(tbl_male, group = Age.group)
 y = calcNormFactors(y)
+plotMDS(y) 
+#For robust option refer to http://supportupgrade.bioconductor.org/p/79149/#79225
+design = model.matrix(~Age.group)
+y = estimateDisp(y, design)
+fit = glmQLFit(y, design, robust = TRUE)
+qlf = glmQLFTest(fit, coef = 2)
+write.table(topTags(qlf , n = Inf),'15Month_vs_6Month_selected.fastq.trimmed.RAT_ens98_longest_cDNA.BWA.SAMBestCount.glmQLFit.RobustDisp.edgeR.txt', sep = '\t',quote = FALSE)
+DEG.total = topTags(qlf , n = Inf)$table
+DEG.clean = DEG.total[abs(DEG.total$logFC) > 1 & DEG.total$FDR < 0.05, ]
+write.table(DEG.clean,'15Month_vs_6Month_selected.fastq.trimmed.RAT_ens98_longest_cDNA.BWA.SAMBestCount.glmQLFit.RobustDisp.edgeR_clean.txt', sep = '\t',quote = FALSE)
+tbl.male.filtered.rpkm = tbl_rpkm_male[rownames(tbl_rpkm_male) %in% rownames(y$counts), ]
+tmp_cor <- dist( 1 - cor(as.matrix(tbl.male.filtered.rpkm), method = 'spearman'))
+tmp_clust <- hclust(tmp_cor, method="average")
+tmp_clust = as.dendrogram(tmp_clust)
+plot(tmp_clust, main = 'SH-SY5Y_IronTreat_filtered', cex = 1.5, cex.main = 1.5)
 
-# Grouping plot section
-colors = c('red','red','blue','green','blueviolet','gray0','gray0')
-points = c(0,1,2,1,0,0,1)
-plotMDS(y, col=colors[group], pch=points[group])
-legend("topleft", legend=levels(group), pch=points, col=colors, ncol=2)
-
-#Validation with dendrogram
-tmp_cor = dist(1-cor(cpm(y$counts), method = 'spearman'))
-tmp_clust = hclust(tmp_cor, method = 'average')
-tmp_plot = as.dendrogram(tmp_clust)
-plot(tmp_plot)
-
-#DGE analysis
-design = model.matrix(~0 + group)
-colnames(design) = levels(group)
-y = estimateDisp(y, design, robust = TRUE)
+#Female case 
+##Step 1) Clean Up data
+select = apply(tbl_rpkm_female, 1, function(x) sum(x >= 1) >= 10 )
+tbl_female.clean = tbl_female[select,]
+tbl_rpkm_female.clean = tbl_rpkm_female[select,]
+##Step 2) Correlation check
+tmp_cor <- dist( 1 - cor(as.matrix(tbl_rpkm_female.clean), method = 'spearman'))
+tmp_clust <- hclust(tmp_cor, method="average")
+tmp_clust = as.dendrogram(tmp_clust)
+plot(tmp_clust, cex = 1.5, cex.main = 1.5, main = "Female Rat Substantia nigra 6Mo vs 6Wo")
+##Step 3) DEG analysis
+Age.group = factor(c(rep('6M', times = 10), rep('6W', times = 10)), levels = c('6W','6M'))
+y = DGEList(tbl_female.clean, group = Age.group)
+y = calcNormFactors(y)
+plotMDS(y) 
+#For robust option refer to http://supportupgrade.bioconductor.org/p/79149/#79225
+design = model.matrix(~Age.group)
+y = estimateDisp(y, design)
 plotBCV(y)
 fit = glmQLFit(y, design, robust = TRUE)
-con = makeContrasts(C.6M - B.6W, levels = design)
-qlf = glmQLFTest(fit, contrast = con)
-write.table(topTags(qlf , n = Inf),'groupC_6M_up_groupB_6W_down.edgeRQLF_output.txt', sep = '\t',quote = FALSE)
+plotQLDisp(fit)
+qlf = glmQLFTest(fit, coef = 2)
+write.table(topTags(qlf , n = Inf),'6Month_vs_6Week.fastq.trimmed.RAT_ens98_longest_cDNA.BWA.SAMBestCount.glmQLFit.Robust.edgeR.txt', sep = '\t',quote = FALSE)
+DEG.total = topTags(qlf , n = Inf)$table
+DEG.clean = DEG.total[abs(DEG.total$logFC) > 1 & DEG.total$FDR < 0.05, ]
+write.table(DEG.clean,'6Month_vs_6Week.fastq.trimmed.RAT_ens98_longest_cDNA.BWA.SAMBestCount.glmQLFit.Robust.edgeR_geneID_clean.txt', sep = '\t',quote = FALSE)
