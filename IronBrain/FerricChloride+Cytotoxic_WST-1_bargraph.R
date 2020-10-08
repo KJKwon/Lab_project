@@ -27,7 +27,7 @@ p = ggplot(tbl.plot,aes(x = value, y = variable)) + geom_bar(stat = 'identity', 
   theme(text = element_text(size = 20), legend.title = element_blank(), panel.background = element_blank(),
         panel.border = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(size = 1, colour = 'black'),
         axis.text.x = element_text(colour = 'black', size = 15), axis.text.y = element_text(colour = 'black', size = 15),
-        axis.title.x = element_blank) + 
+        axis.title.x = element_blank()) + 
   ylab('% WST-1 Absorbance\n(compared to control)') + scale_y_continuous(expand = expand_scale(mult = c(0, .1)))
 
 plot(p)
