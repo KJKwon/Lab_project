@@ -22,9 +22,15 @@ tmp_clust = reorder(tmp_clust, 1:10)
 bar.group = HeatmapAnnotation(group = sample.group, annotation_name_side = 'left',
                               col = list(group = c("Control" = "#FFFFCC", "500uM" = "#FED976",
                                                    "2mM" = "#FC4E2A", "10mM" = "#BD0026")),
-                              annotation_legend_param = list(grid_height = unit(0.5, "cm"), title = "", grid_with = unit(0.5, "cm")))
+                              annotation_legend_param = list(grid_height = unit(0.3, "cm"), title = "", grid_width = unit(0.3, "cm"),
+                                                             row_names_gp = gpar(fontsize = 9), direction = "horizontal"),
+                              show_annotation_name = FALSE, height = unit(0.15, "cm"), simple_anno_size_adjust = TRUE)
 
 ht.main = Heatmap(as.matrix(tbl.rpkm.cor), cluster_rows = tmp_clust,cluster_columns = tmp_clust, top_annotation = bar.group, 
-                  heatmap_legend_param = list(legend_height = unit(5, "cm"),title = "Spearman correlation", title_position = "leftcenter-rot",
-                                              grid_width = unit(0.5,"cm")))
-draw(ht.main, merge_legend = TRUE)
+                  heatmap_legend_param = list(legend_height = unit(1.5, "cm"),title = "Spearman correlation",
+                                              grid_width = unit(0.2,"cm"),title_gp = gpar(fontsize = 9),
+                                              labels_gp = gpar(fontsize = 9),direction = "horizontal"), row_names_gp = gpar(fontsize = 9), column_names_gp = gpar(fontsize = 9),
+                  column_dend_height = unit(0.5,"cm"), row_dend_width = unit(0.5,'cm'))
+pdf(file = "Figure4_2_SH-SY5Y_IronTreat_correlation_heatmap_v1.pdf", width = 3.1, height = 3.5)
+draw(ht.main, merge_legend = TRUE, heatmap_legend_side = "bottom", annotation_legend_side = "bottom")
+dev.off()
