@@ -1,5 +1,6 @@
 library(ComplexHeatmap)
 library(RColorBrewer)
+library(dendextend)
 tbl.rpkm = read.table('SH-SY5Y_IronTreat_24h_MGISeq_rpkm_GeneName.txt', row.names = 1, header = TRUE)
 total.filter = apply(tbl.rpkm[,c(1,2,3,10,11,12)], 1, function(x) sum(x >= 1) >= 3)
 #male.filter = apply(tbl.rpkm[,1:16], 1, function(x) sum(x >= 1) >= 8)
@@ -19,6 +20,7 @@ tmp_cor <- dist( 1 - cor(as.matrix(tbl.rpkm.clean), method = 'spearman'))
 tmp_clust <- hclust(tmp_cor, method="average")
 tmp_clust = as.dendrogram(tmp_clust)
 tmp_clust = reorder(tmp_clust, 1:10)
+tmp_clust = set(tmp_clust, "branches_lwd",2.5)
 bar.group = HeatmapAnnotation(group = sample.group, annotation_name_side = 'left',
                               col = list(group = c("Control" = "#FFFFCC", "500uM" = "#FED976",
                                                    "2mM" = "#FC4E2A", "10mM" = "#BD0026")),
@@ -30,7 +32,7 @@ ht.main = Heatmap(as.matrix(tbl.rpkm.cor), cluster_rows = tmp_clust,cluster_colu
                   heatmap_legend_param = list(legend_height = unit(1.5, "cm"),title = "Spearman correlation",
                                               grid_width = unit(0.2,"cm"),title_gp = gpar(fontsize = 9),
                                               labels_gp = gpar(fontsize = 9),direction = "horizontal"), row_names_gp = gpar(fontsize = 9), column_names_gp = gpar(fontsize = 9),
-                  column_dend_height = unit(0.5,"cm"), row_dend_width = unit(0.5,'cm'))
-pdf(file = "Figure4_2_SH-SY5Y_IronTreat_correlation_heatmap_v1.pdf", width = 3.1, height = 3.5)
+                  column_dend_height = unit(0.8,"cm"), row_dend_width = unit(0.8,'cm'))
+pdf(file = "Figure4_2_SH-SY5Y_IronTreat_correlation_heatmap_v1.pdf", width = 3.1, height = 3.8)
 draw(ht.main, merge_legend = TRUE, heatmap_legend_side = "bottom", annotation_legend_side = "bottom")
 dev.off()
