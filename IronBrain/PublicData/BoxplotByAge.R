@@ -12,6 +12,8 @@ tbl.complete  = tbl.complete[,c(-1,-6)]
 tbl.male = tbl.complete[tbl.complete$SEX == 'M',]
 tbl.female = tbl.complete[tbl.complete$SEX == 'F',]
 tmp.select = melt(tbl.complete)
+##When considering sex differences
+#tmp.select = tmp.select[,c(-1)]
 tmp.select$AGE = factor(tmp.select$AGE, levels = sort(unique(tmp.select$AGE)))
 tmp.mean = melt(acast(data = tmp.select, AGE~variable, fun = mean))
 tbl.mean = tmp.mean[tmp.mean$Var2 == 'PTP4A3',]
