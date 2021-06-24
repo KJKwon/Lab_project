@@ -2,8 +2,6 @@ library(DESeq2)
 library(DEGreport)
 tbl = read.table('SH-SY5Y_IronChallenge_4_lineages.human_ens98_longest_bwa_mem_count_GeneName.txt', header = TRUE, sep = '\t', row.names = 1)
 tbl_rpkm = read.table('SH-SY5Y_IronChallenge_4_lineages.human_ens98_longest_bwa_mem_rpkm_GeneName.txt', header = TRUE, sep = '\t', row.names = 1)
-tbl_clean = tbl[select,]
-tbl_rpkm_clean = tbl_rpkm[select,]
 coldata <- data.frame(Age = factor(c(rep('Control', times = 3), rep('1mM', times = 3), 
                                      rep('2mM', times= 3),rep('3mM', times= 3))))
 rownames(coldata) = colnames(tbl)
