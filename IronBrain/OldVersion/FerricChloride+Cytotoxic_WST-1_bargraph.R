@@ -1,8 +1,8 @@
 library(ggplot2)
 library(reshape2)
 library(grid)
-tbl = read.table('SH-SY5Y_IronToxicityTest_FeCl2_24h_WST-1_results.csv', row.names = 1, header = TRUE)
-conc.list = c('Control','100','200','500','1','2','5','10')
+tbl = read.table('210816_SH-SY5Y_IronToxicityTest_FeCl2_24h_WST-1_results.csv', row.names = 1, header = TRUE)
+conc.list = c('0','0.1','0.2','0.5','1','2','5','10')
 colnames(tbl) = conc.list
 tbl = apply(t(tbl),1,function(x){(x/tbl[,1])*100})
 val.Mean = apply(tbl,2,mean)
@@ -21,8 +21,9 @@ tbl.plot = tbl.plot[,3:5]
 colnames(tbl.plot) = c('variable', 'value', 'sd')
 colnames(tbl.dotplot)[2] = c('variable')
 tbl.plot$value = factor(tbl.plot$value, levels = tbl.plot$value)
-pdf(file = "Figure4_1_SH-SY5Y_IronTreat_WST-1_Cytotoxicity_barplot_v1.pdf", width = 3.1, height = 3)
-p = ggplot(tbl.plot,aes(x = value, y = variable)) + geom_bar(stat = 'identity', position = 'dodge', width = 0.5, colour = 'black',
+tbl.dotplot$variable = factor(rep(conc.list, each = 5), levels = conc.list)
+#pdf(file = "Figure4_1_SH-SY5Y_IronTreat_WST-1_Cytotoxicity_barplot_v1.pdf", width = 3.1, height = 3)
+p = ggplot(tbl.plot,aes(x = value, y = variable)) + geom_bar(stat￩ = 'identity', position = 'dodge', width = 0.5, colour = 'black',
                                                              fill = 'white', lwd = 0.8)+
   geom_errorbar(aes(x = value, ymin = variable - sd, ymax = variable + sd), position = position_dodge(0.9), width = 0.3,size = 0.8)+
   geom_point(aes(x = variable, y = value),tbl.dotplot, position = position_dodge(0.9), size = 0.5, fill = 'white', shape = 21)+
